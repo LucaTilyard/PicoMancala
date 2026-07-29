@@ -145,7 +145,7 @@ int evaluateBoard(struct GameState *board) {
 }
 
 // implement vanilla minimax algorithm to find best move for current player. Returns the best score for the current player.
-int minimax(struct GameState *board, int depth, bool isMaximising){ 
+int minimax(struct GameState *board, int depth, int alpha, int beta, bool isMaximising){ 
 
     // End of tree: if game is over or depth is 0, evaluate the board position
     if (depth == 0 || isGameOver(board)) { 
@@ -166,15 +166,25 @@ int minimax(struct GameState *board, int depth, bool isMaximising){
 
             int currentScore;
             if (extraTurn == 1) { 
-                currentScore = minimax(&newBoard, depth, isMaximising); 
+                currentScore = minimax(&newBoard, depth, alpha, beta, isMaximising); 
             } else { 
-                currentScore = minimax(&newBoard, depth - 1, !isMaximising); 
+                currentScore = minimax(&newBoard, depth - 1, alpha, beta, !isMaximising); 
             } 
 
             // Keep the highest score
             if (currentScore > bestScore) {
                 bestScore = currentScore;
             }
+
+            // Alpha-beta pruning 
+            if (bestScore > alpha){ 
+                alpha = bestScore;
+            }
+
+            if (beta <= alpha) { 
+                break; // Prune the remaing branches
+            }
+
         }
         return bestScore;
     } else { // Minimising player (Player 2)
@@ -190,14 +200,23 @@ int minimax(struct GameState *board, int depth, bool isMaximising){
 
             int currentScore;
             if (extraTurn == 1) { 
-                currentScore = minimax(&newBoard, depth, isMaximising); 
+                currentScore = minimax(&newBoard, depth, alpha, beta, isMaximising); 
             } else { 
-                currentScore = minimax(&newBoard, depth - 1, !isMaximising); 
+                currentScore = minimax(&newBoard, depth - 1, alpha, beta, !isMaximising); 
             } 
 
             // Keep the lowest score
             if (currentScore < bestScore) {
                 bestScore = currentScore;
+            }
+
+            // Alpha-beta pruning
+            if (bestScore < beta){ 
+                beta = bestScore;
+            }
+
+            if (beta <= alpha) { 
+                break; // Prune the remaing branches
             }
         }
         return bestScore;
@@ -218,9 +237,9 @@ int getBestMove(struct GameState *board, int depth, bool isMaximising) {
             int currentScore;
 
             if (extraTurn == 1) {
-                currentScore = minimax(&newBoard, depth, isMaximising);
+                currentScore = minimax(&newBoard, depth, MIN_SCORE, MAX_SCORE, isMaximising);
             } else {
-                currentScore = minimax(&newBoard, depth - 1, !isMaximising);
+                currentScore = minimax(&newBoard, depth - 1, MIN_SCORE, MAX_SCORE, !isMaximising);
             }
 
             if (currentScore > bestScore) {
@@ -237,9 +256,9 @@ int getBestMove(struct GameState *board, int depth, bool isMaximising) {
             int currentScore;
 
             if (extraTurn == 1) {
-                currentScore = minimax(&newBoard, depth, isMaximising);
+                currentScore = minimax(&newBoard, depth, MIN_SCORE, MAX_SCORE, isMaximising);
             } else {
-                currentScore = minimax(&newBoard, depth - 1, !isMaximising);
+                currentScore = minimax(&newBoard, depth - 1, MIN_SCORE, MAX_SCORE, !isMaximising);
             }
 
             if (currentScore < bestScore) {
@@ -273,3 +292,8 @@ int main()
 
     }
 }
+
+// Refactor 
+// implement iterative deepening, use this to improve move order. 
+// Threading: Use threads to run minimax in parallel
+

@@ -36,7 +36,9 @@ pico_sdk_init()
 # Add executable. Default name is the project name, version 0.1
 
 add_executable(Mancala-Tron 
-main.c )
+main.c
+mancala.c
+ )
 
 pico_set_program_name(Mancala-Tron "Mancala-Tron")
 pico_set_program_version(Mancala-Tron "0.1")

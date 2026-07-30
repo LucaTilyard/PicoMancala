@@ -1,8 +1,6 @@
 #include <stdio.h>
 #include "mancala.h"
 
-
-
 // Initalises the board with 4 stones in each pit and 0 in the stores.
 struct GameState initBoard() { 
 
